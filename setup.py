@@ -26,6 +26,7 @@ setuptools.setup(
     extras_require = {
         "dev": [
             "pytest>=3.7",
+            "twine>=3.0",
         ],
     },
 )
