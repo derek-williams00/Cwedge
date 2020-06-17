@@ -7,7 +7,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="Cwedge-pkg",
-    version="0.0.1",
+    version="0.0.2",
     author="Derek Williams",
     author_email="derek@derekwilliams00.com",
     description="A Python based build framework for C and C++.",
@@ -21,6 +21,13 @@ setuptools.setup(
         "Operating System :: OS Independent",
     ],
     python_requires='>=3.6',
+    py_modules=['cwedge'],
+    package_dir={'': 'src'},
+    extras_require = {
+        "dev": [
+            "pytest>=3.7",
+        ],
+    },
 )
 
 

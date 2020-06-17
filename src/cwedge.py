@@ -1,5 +1,5 @@
 import os
-from os import path as pth
+from os import path
 
 class VirtualFile:
     def __init__(self, name, content=None, location=None):
@@ -19,21 +19,20 @@ class VirtualFile:
         file_obj.close()
         self.location = None
 
-    def make(self, path=None, mount=False):
-        if path != None:
-            self.location = path
+    def put(self, location=None, mount=False):
+        if location != None:
+            self.location = location
         if self.location != None:
             return
-        full_path = pth.join(path, self.name)
-        os.makedirs(full_path, exists_ok=True)
-        file_obj = open(full_path, "w+")
+        full_loc = path.join(loc, self.name)
+        os.makedirs(full_loc, exists_ok=True)
+        file_obj = open(full_loc, "w+")
         file_obj.write(self.content)
         file_obj.close()
         if mount:
             self.content = None
 
-
-def default_model():
+def default():
     return {
         "build": {
             "bin": {
@@ -58,29 +57,18 @@ def default_model():
     }
 
 
-def update_project(model, path=os.curdir, replace=False):
-    for title in model.keys():
-        path_here = pth.join(path, title)
-        if pth.exists(path_here)):
-            if type(model[title]) == dict:
-                pth.makedirs(path_here, exists_ok=True)
-                update_project(model[title], path_here, replace)
-            elif replace and type(model[title]) == VirtualFile:
-                model[title].make(path)
-            else:
-                #! replace this later
-                raise Exception("ERROR: unsupported model element")
 
 # Returns a dict mapping names to representations of directories and files
-def new_model(path=os.curdir):
-    if not pth.exists(pth):
+def new(loc=os.curdir):
+    if not path.exists(loc):
         return None
-    if pth.isfile(path):
-        return { pth.basename(path) : VirtualFile(pth.basename(path), location=path) }
+    if path.isfile(loc):
+        return { path.basename(loc) : VirtualFile(path.basename(loc), location=loc) }
     children = dict()
-    for entry in os.scandir(path):
-        children.apply(new_model(entry.path)
-    return { pth.basename(path) : children }
+    for entry in os.scandir(loc):
+        children.apply(new_model(entry.loc))
+    return { path.basename(loc) : children }
+
 
 def new_library(name):
     return { name : {
@@ -95,7 +83,33 @@ def new_library(name):
     }}
 
 
-def mount_model(model, path=os.curdir):
+def update_project(model, loc=os.curdir, replace=False):
+    for title in model.keys():
+        loc_here = path.join(loc, title)
+        if path.exists(loc_here):
+            if type(model[title]) == dict:
+                path.makedirs(loc_here, exists_ok=True)
+                update_project(model[title], loc_here, replace)
+            elif replace and type(model[title]) == VirtualFile:
+                model[title].make(loc)
+            else:
+                #! replace this later
+                raise Exception("ERROR: unsupported model element")
+
+def mount(model, loc=os.curdir):
     pass
+
+def setup_project(loc=os.curdir, config=None):
+    update_project(default_model())
+
+
+
+
+
+
+
+
+
+
 
 
